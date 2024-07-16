@@ -1,27 +1,25 @@
-// pages/static.tsx
-
-import { NextPage } from "next"
+import { GetStaticProps, NextPage } from "next"
 import { ReactNode, useEffect, useState } from "react"
 import { Col, Container, Row } from "reactstrap"
 
 type ApiResponse = {
   name: string
-  timestamp: Date
+  timestamp: string
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-    const staticData = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/api/hello`).then(res => res.json())
-  
-    return {
-      props: {
-        staticData
-      }
+  const staticData = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/api/hello`).then(res => res.json())
+
+  return {
+    props: {
+      staticData
     }
   }
+}
 
 const Static: NextPage = (props: {
-    children?: ReactNode
-    staticData?: ApiResponse
+  children?: ReactNode
+  staticData?: ApiResponse
 }) => {
   const [clientSideData, setClientSideData] = useState<ApiResponse>()
 
@@ -33,6 +31,9 @@ const Static: NextPage = (props: {
     const data = await fetch(`/api/hello`).then(res => res.json())
     setClientSideData(data)
   }
+
+  const staticTimestamp = props.staticData ? new Date(props.staticData.timestamp) : null
+  const clientTimestamp = clientSideData ? new Date(clientSideData.timestamp) : null
 
   return (
     <Container tag="main">
@@ -46,7 +47,7 @@ const Static: NextPage = (props: {
             Gerado estaticamente durante o build:
           </h3>
           <h2>
-            {props.staticData?.timestamp}
+            {staticTimestamp?.toString()}
           </h2>
         </Col>
 
@@ -55,7 +56,7 @@ const Static: NextPage = (props: {
             Gerado no cliente:
           </h3>
           <h2>
-            {clientSideData?.timestamp}
+            {clientTimestamp?.toString()}
           </h2>
         </Col>
       </Row>
